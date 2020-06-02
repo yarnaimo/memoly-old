@@ -1,0 +1,32 @@
+import { ulid } from 'ulid'
+import { v1 } from '../../../../server/functions/v1'
+import { CallableDataType } from '../../../../server/services/firebase/functions/helper'
+import { webConfig } from '../../../web-config'
+import { app } from './_app-web'
+
+export const functions = app.functions('asia-northeast1')
+
+if (webConfig.isDev) {
+    functions.useFunctionsEmulator(`http://localhost:5000`)
+}
+
+type V1Callables = typeof v1.callable
+
+export const callv1 = async <
+    N extends keyof V1Callables,
+    C extends V1Callables[N] = V1Callables[N]
+>(
+    name: N,
+    requestData: CallableDataType<C['run'], 'request'>,
+) => {
+    const idempotencyKey = ulid()
+
+    const result = await functions
+        .httpsCallable(`v1-callable-${name}`)({
+            ...requestData,
+            idempotencyKey,
+        })
+        .catch((error) => console.error(error))
+
+    return result && (result.data as CallableDataType<C['run'], 'response'>)
+}

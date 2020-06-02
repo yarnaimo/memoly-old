@@ -1,0 +1,19 @@
+{
+    "presets": [
+        [
+            "next/babel",
+            {
+                "preset-env": {
+                    "useBuiltIns": "usage",
+                    "corejs": 3
+                }
+            }
+        ],
+        "@emotion/babel-preset-css-prop"
+    ],
+    "plugins": [
+        "emotion",
+        "@babel/plugin-proposal-optional-chaining",
+        "@babel/plugin-proposal-nullish-coalescing-operator"
+    ]
+}
